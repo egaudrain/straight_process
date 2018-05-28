@@ -11,7 +11,7 @@ __Note__: STRAIGHT is not open source and cannot be freely distributed here. `st
 
 ## Usage
 
-```matlab
+```
 STRAIGHT_PROCESS - Cached STRAIGHT process of files
   [Y, FS] = STRAIGHT_PROCESS(FILENAME, DF0)
       Processes FILENAME with STRAIGHTV40_006b to apply DF0, which
