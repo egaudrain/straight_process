@@ -3,7 +3,7 @@ A tool to process files with STRAIGHT.
 
 [STRAIGHT](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html) is a high fidelity vocoder created by Hideki Kawahara at Wakayama University, Japan. It's been used in numerous research projects to manipulate vocal properties of speech recordings.
 
-Since the initial version (STRAIGHTV40_006b), Kawahara and his colleagues have developed many new versions. This `straight_process` tool offers a common interface to a number of these tools.
+Since the initial version (STRAIGHTV40_006b), Kawahara and his colleagues have developed many new versions. This `straight_process` tool offers a common interface to a number of these tools, allowing you to apply a voice transformation to a sound or soundfile.
 
 In addition, the `straight_process` function caches the generated files (both from analysis and synthesis) to speed-up processing in the context of an experiment.
 
