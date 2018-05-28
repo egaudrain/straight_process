@@ -7,7 +7,7 @@ Since the initial version (STRAIGHTV40_006b), Kawahara and his colleagues have d
 
 In addition, the `straight_process` function caches the generated files (both from analysis and synthesis) to speed-up processing in the context of an experiment.
 
-__Note__: STRAIGHT is not open source and cannot be freely distributed here. `straight_process` assumes that you've obtained STRAIGHT, Tandem-Straight, StraightLib or WORLD by you own means. STRAIGHT and Tandem-Straight can be obtained from this [webpage](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html). StraightLib does not seem to be available anymore at the moment. WORLD is available on [github](https://github.com/mmorise/World). Once you have (at least some of) the required libraries, you have to 
+__Note__: STRAIGHT is not open source and cannot be freely distributed here. `straight_process` assumes that you've obtained STRAIGHT, Tandem-Straight, StraightLib or WORLD by you own means. STRAIGHT and Tandem-Straight can be obtained from this [webpage](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html). StraightLib does not seem to be available anymore at the moment. WORLD is available on [github](https://github.com/mmorise/World). Once you have (at least some of) the required libraries, you have to
 
 ## Usage
 
@@ -51,6 +51,8 @@ STRAIGHT_PROCESS - Cached STRAIGHT process of files
       - cache_format: 'flac' (default) or 'wav'
       - straight_path, tandem_path, straightlib_path: the paths to the
         various STRAIGHT libraries.
+      - lower_f0_bound, upper_f0_bound: these are the min and max F0
+        values used during the F0 extraction process.
 
   [Y, FS] = STRAIGHT_PROCESS(X, FS, ...)
       Same as above but passing the signal directly instead of a file
@@ -62,3 +64,16 @@ STRAIGHT_PROCESS - Cached STRAIGHT process of files
   cache files are stored in a way that prevents clipping. It is the
   user's job to make sure that clipping does not occur at playback.
 ```
+
+## Example
+
+The call below will shift the F0 one octave down, extend the VTL by 3.8
+semitones and double the duration:
+
+```matlab
+[y, fs] = straight_process('filename.wav', -12, 3.8, '*2', 'straight');
+```
+
+If the same wavfile is processed again, the analysis step will be skipped, and
+instead the analysis will be read from the cached mat file.
+

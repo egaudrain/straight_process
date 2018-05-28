@@ -39,6 +39,8 @@ function [y, fs, info] = straight_process(varargin)
 %       - cache_format: 'flac' (default) or 'wav'
 %       - straight_path, tandem_path, straightlib_path: the paths to the
 %         various STRAIGHT libraries.
+%       - lower_f0_bound, upper_f0_bound: these are the min and max F0
+%         values used during the F0 extraction process.
 %
 %   [Y, FS] = STRAIGHT_PROCESS(X, FS, ...)
 %       Same as above but passing the signal directly instead of a file
@@ -172,10 +174,10 @@ end
 args.params = struct();
 args.params.cache_folder = './straight_process_cache';
 args.params.cache_format = 'flac';
-args.params.straight_path = '~/Library/Matlab/straight';
-args.params.tandem_path   = '~/Library/Matlab/tandem';
+args.params.straight_path = './straight';
+args.params.tandem_path   = './tandem';
 args.params.straightlib_path = './straightlib';
-args.params.world_path = '~/Library/Matlab/world';
+args.params.world_path = './world';
 for i=1:2
     nargin_offset = nargin_offset+1;
     if nargin<nargin_offset
@@ -322,16 +324,24 @@ tic();
 
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
+    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
     fs = args.fs;
-    [f0, ap] = exstraightsource(args.x, fs);
+    prms = struct();
+    if isfield(args.params, 'lower_f0_bound')
+        prms.F0searchLowerBound = args.params.lower_f0_bound;
+    end
+    if isfield(args.params, 'upper_f0_bound')
+        prms.F0searchUpperBound = args.params.upper_f0_bound;
+    end
+    [f0, ap] = exstraightsource(args.x, fs, prms);
     spenv = exstraightspec(args.x, f0, fs);
     rms_x = rms(args.x);
     duration = length(args.x)/fs;
-    filename = args.filename;
     if args.do_cache
+        filename = args.filename;
         if ~exist(args.params.cache_folder, 'dir')
             mkdir(args.params.cache_folder);
         end
@@ -340,6 +350,9 @@ else
     info.mat_source = 'generated';
     info.analysis_time = toc();
 end
+
+info.f0 = f0;
+info.f0_temporal_positions = (0:length(f0)-1)/1e3;
 
 tic();
 
@@ -369,14 +382,23 @@ tic();
 
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
+    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
     fs = args.fs;
+    
     % Source information extraction
     optP = struct();
     optP.channelsPerOctave = 3;
-    optP.f0ceil = 650;
+
+    if isfield(args.params, 'lower_f0_bound')
+        optP.f0floor = args.params.lower_f0_bound;
+    end
+    if isfield(args.params, 'upper_f0_bound')
+        optP.f0ceil = args.params.upper_f0_bound;
+    end
+    
     r  = exF0candidatesTSTRAIGHTGB(args.x, fs, optP);
     rc = autoF0Tracking(r, args.x);
     q = aperiodicityRatio(args.x, rc, 1);
@@ -390,8 +412,8 @@ else
     
     rms_x = rms(args.x);
     duration = length(args.x)/fs;
-    filename = args.filename;
     if args.do_cache
+        filename = args.filename;
         if ~exist(args.params.cache_folder, 'dir')
             mkdir(args.params.cache_folder);
         end
@@ -400,6 +422,9 @@ else
     info.mat_source = 'generated';
     info.analysis_time = toc();
 end
+
+info.f0 = q.f0;
+info.f0_temporal_positions = q.temporalPositions;
 
 tic();
 
@@ -447,8 +472,16 @@ if args.do_cache
 
     tic();
     [~, ser, tar] = apply_args(args, 1, 1);
-
+    
     cmd_args = sprintf('-syn -pc %f -fc %f "%s" "%s"', 2.^(args.dF0/12), ser, args.cache_filename_mat, args.cache_filename_snd);
+    
+    if isfield(args.params, 'lower_f0_bound')
+        cmd_args = ['-lf0 ', num2str(args.params.lower_f0_bound), ' ', cmd_args];
+    end
+    if isfield(args.params, 'upper_f0_bound')
+        cmd_args = ['-uf0 ', num2str(args.params.upper_f0_bound), ' ', cmd_args];
+    end
+    
     [s, ~] = system([cmd, ' ', cmd_args]);
     if s~=0
         error('There was an error during the execution of straightlib...');
@@ -471,20 +504,30 @@ tic();
 
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
+    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
     fs = args.fs;
+    
+    opt = struct();
+    if isfield(args.params, 'lower_f0_bound')
+        opt.f0_floor = args.params.lower_f0_bound;
+    end
+    if isfield(args.params, 'upper_f0_bound')
+        opt.f0_ceil = args.params.upper_f0_bound;
+    end
+    
     % Source information extraction
-    f0p = Harvest(args.x, fs);
+    f0p = Harvest(args.x, fs, opt);
     spe = CheapTrick(args.x, fs, f0p);
     spe.frequencies =  (0:size(spe.spectrogram, 1)-1) / (size(spe.spectrogram, 1)-1) * spe.fs/2;
     src = D4C(args.x, fs, f0p);
     
     rms_x = rms(args.x);
     duration = length(args.x)/fs;
-    filename = args.filename;
     if args.do_cache
+        filename = args.filename;
         if ~exist(args.params.cache_folder, 'dir')
             mkdir(args.params.cache_folder);
         end
@@ -493,6 +536,9 @@ else
     info.mat_source = 'generated';
     info.analysis_time = toc();
 end
+
+info.f0 = src.f0;
+info.f0_temporal_positions = src.temporal_positions;
 
 tic();
 
