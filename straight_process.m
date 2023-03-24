@@ -628,8 +628,8 @@ else
 end
 
 %-----------------------------------------------------------------------------------------
-function md = md5(msg)
+function hash = md5(msg)
 
-MD = java.security.MessageDigest.getInstance('md5');
-md = typecast(MD.digest(uint8(msg)), 'uint8');
-md = lower(reshape(dec2hex(md)', 1, []));
+md = java.security.MessageDigest.getInstance('MD5');
+hash = typecast(md.digest(uint8(msg)), 'uint8');
+hash = lower(reshape(dec2hex(hash)', 1, []));
