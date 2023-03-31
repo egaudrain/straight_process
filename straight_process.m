@@ -322,9 +322,10 @@ addpath(args.params.straight_path);
 info = struct();
 tic();
 
+info.mat_filename = args.cache_filename_mat;
+
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
-    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
@@ -380,9 +381,10 @@ addpath(args.params.tandem_path);
 info = struct();
 tic();
 
+info.mat_filename = args.cache_filename_mat;
+
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
-    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
@@ -453,6 +455,8 @@ function [y, fs, info] = process_straightlib(args)
 
 info = struct();
 
+info.mat_filename = args.cache_filename_mat;
+
 cmd = fullfile(args.params.straightlib_path, 'straight');
 if ispc()
     cmd = [cmd, '.exe'];
@@ -502,9 +506,10 @@ addpath(args.params.world_path);
 info = struct();
 tic();
 
+info.mat_filename = args.cache_filename_mat;
+
 if args.do_cache && exist(args.cache_filename_mat, 'file')
     load(args.cache_filename_mat);
-    info.mat_filename = args.cache_filename_mat;
     info.mat_source = 'cache';
     info.analysis_time = toc();
 else
