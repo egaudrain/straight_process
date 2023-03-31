@@ -495,7 +495,7 @@ end
 
 function [y, fs, info] = process_world(args)
 
-% Effect the transformation with TANDEM
+% Effect the transformation with WORLD
 
 addpath(args.params.world_path);
 
@@ -566,6 +566,9 @@ function [snd_fname, mat_fname] = make_fname(args)
 
 if isfield(args, 'filename')
     [p, name, ext] = fileparts(args.filename);
+    if isempty(p)
+        p = './';
+    end
     ext = lower(ext);
     m = md5(p);
     s = '';
@@ -631,5 +634,5 @@ end
 function md = md5(msg)
 
 MD = java.security.MessageDigest.getInstance('md5');
-md = typecast(MD.digest(uint8(msg)), 'uint8');
+md = typecast(MD.digest(uint8(char(msg))), 'uint8');
 md = lower(reshape(dec2hex(md)', 1, []));
