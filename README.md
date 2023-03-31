@@ -1,13 +1,13 @@
 # straight_process
 A tool to process files with STRAIGHT.
 
-[STRAIGHT](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html) is a high fidelity vocoder created by Hideki Kawahara at Wakayama University, Japan. It's been used in numerous research projects to manipulate vocal properties of speech recordings.
+[STRAIGHT](https://github.com/HidekiKawahara/legacy_STRAIGHT) is a high fidelity vocoder created by Hideki Kawahara at Wakayama University, Japan. It's been used in numerous research projects to manipulate vocal properties of speech recordings.
 
 Since the initial version (STRAIGHTV40_006b), Kawahara and his colleagues have developed many new versions. This `straight_process` tool offers a common interface to a number of these tools, allowing you to apply a voice transformation to a sound or sound file.
 
 In addition, the `straight_process` function caches the generated files (both from analysis and synthesis) to speed-up processing in the context of an experiment.
 
-__Note__: STRAIGHT is not open source and cannot be freely distributed here. `straight_process` assumes that you've obtained STRAIGHT, Tandem-Straight, StraightLib or WORLD by you own means. STRAIGHT and Tandem-Straight can be obtained from this [webpage](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html). StraightLib does not seem to be available anymore at the moment. WORLD is available on [github](https://github.com/mmorise/World). Once you have (at least some of) the required libraries, you have to
+__Note__: The "legacy" version of STRAIGHT (V40_006B) is now available on github, but others versions are not open source and cannot be freely distributed here. `straight_process` assumes that you've obtained STRAIGHT, Tandem-Straight, StraightLib or WORLD by you own means. STRAIGHT and Tandem-Straight used to be available from this [webpage](http://www.wakayama-u.ac.jp/~kawahara/STRAIGHTadv/index_e.html). StraightLib does not seem to be available anymore at the moment. The Matlab version of WORLD is available at [here](http://www.isc.meiji.ac.jp/~mmorise/world/english/download.html), but also see on [github](https://github.com/mmorise/World) for other versions. Once you have (at least some of) the required libraries, you have to add them the corresponding subfolders of the folder where `straight_process.m` is. Alternatively you can pass the actual folder in the parameter structure (see below), or you can modify l.177-180 to adjust the folders to your needs.
 
 ## Usage
 
